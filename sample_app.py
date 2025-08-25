@@ -5,7 +5,7 @@ from streamlit_vertical_slider import vertical_slider
 st.set_page_config(layout="wide")
 st.subheader("Vertical Slider")
 
-bottom_cols = st.columns(7)
+bottom_cols = st.columns(8)
 with bottom_cols[0]:
     tst = vertical_slider(
         label="Default Style",
@@ -94,3 +94,17 @@ with bottom_cols[6]:
         max_value=1500,
         value_always_visible=False,
     )
+
+with bottom_cols[7]:
+    range_tst = vertical_slider(
+        label="Range Slider",
+        height=300,
+        key="test_range",
+        default_value=[300, 800],
+        step=10,
+        min_value=0,
+        max_value=1500,
+        value_always_visible=True,
+        range=True,
+    )
+    st.write(f"Range selected: {range_tst}")

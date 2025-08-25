@@ -36,10 +36,21 @@ def vertical_slider(
     slider_color: [str, tuple] = "#FF4B4B",
     thumb_color: str = "#FF4B4B",
     value_always_visible: bool = False,
+    range: bool = False,
 ):
     assert thumb_shape in ["circle", "square", "pill"]
-    if default_value < min_value:
-        default_value = min_value
+    if range:
+        if isinstance(default_value, (list, tuple)) and len(default_value) == 2:
+            if default_value[0] < min_value:
+                default_value = [min_value, default_value[1]]
+            if default_value[1] > max_value:
+                default_value = [default_value[0], max_value]
+        else:
+            # If range is True but default_value is not a range, create a default range
+            default_value = [min_value, max_value]
+    else:
+        if default_value < min_value:
+            default_value = min_value
 
     if thumb_shape == "circle":
         thumb_height = ("0.75rem",)
@@ -79,6 +90,7 @@ def vertical_slider(
         slider_color=slider_color,
         opacity=opacity,
         value_always_visible=label_display,
+        range=range,
     )
     return vertical_slider_value if vertical_slider_value else default_value
 

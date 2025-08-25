@@ -9,7 +9,7 @@ import { ThemeProvider } from '@mui/material/styles';
 
 
 const VerticalSlider = (props: ComponentProps) => {
-  const { label, thumb_height, thumb_style, thumb_color, height, min_value, max_value, default_value, step, track_color, slider_color, opacity, value_always_visible } = props.args;
+  const { label, thumb_height, thumb_style, thumb_color, height, min_value, max_value, default_value, step, track_color, slider_color, opacity, value_always_visible, range } = props.args;
   let slots_custom = null
 
   function ValueLabelComponentOpen(props: SliderValueLabelProps) {
@@ -39,15 +39,17 @@ const VerticalSlider = (props: ComponentProps) => {
   }
 
   const [value, setValue] = React.useState(
-    default_value,
+    range ? (Array.isArray(default_value) ? default_value : [min_value, max_value]) : default_value,
   )
-
 
   useEffect(() => Streamlit.setFrameHeight());
 
   const handleChange = (event: any, newValue: number | number[]) => {
-    Streamlit.setComponentValue(newValue);
     setValue(newValue);
+  };
+
+  const handleChangeCommitted = (event: any, newValue: number | number[]) => {
+    Streamlit.setComponentValue(newValue);
   };
 
   const snowflakeTheme = createTheme({
@@ -61,6 +63,10 @@ const VerticalSlider = (props: ComponentProps) => {
             width: 'fit-content !important',
             fontSize: 8,
             marginBottom: 0,
+            '&:focus-within': {
+              outline: '2px solid #1976d2',
+              outlineOffset: '2px',
+            },
           },
 
           thumb: {
@@ -68,6 +74,12 @@ const VerticalSlider = (props: ComponentProps) => {
             width: "0.75rem !important",
             borderRadius: thumb_style,
             height: thumb_height,
+            '&:focus, &:hover, &.Mui-focusVisible': {
+              boxShadow: '0px 0px 0px 8px rgba(25, 118, 210, 0.16)',
+            },
+            '&.Mui-active': {
+              boxShadow: '0px 0px 0px 14px rgba(25, 118, 210, 0.16)',
+            },
           },
           valueLabel: {
             backgroundColor: thumb_color,
@@ -118,12 +130,13 @@ const VerticalSlider = (props: ComponentProps) => {
           min={min_value}
           step={step}
           max={max_value}
-          defaultValue={default_value}
-          onChangeCommitted={handleChange}
+          onChange={handleChange}
+          onChangeCommitted={handleChangeCommitted}
           slots={slots_custom}
           aria-label="custom thumb label"
           orientation="vertical"
           valueLabelDisplay={value_always_visible}
+          value={value}
         />
         <label>{min_value}</label>
         <label>{label}</label>
